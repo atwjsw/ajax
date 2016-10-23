@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
+	<title>AJAX测试</title>
+	<style>
+		 h1, label, input, button,p {
+			font-size:20px;
+			line-height: 1.5;
+		} 
+	</style>
+</head>
+<body>
+	<h1>XHR2跨域 AJAX 调用</h1><hr>
+	<h1>查询员工</h1>
+	<label for="keyword">员工号：</label>
+	<input type="text" id="keyword" name="keyword"/><br>
+	<p id='searchResult'></p>	
+	<button id="search">查询员工</button>
+	
+
+	<h1>添加员工</h1>
+	<label for="number">员工号：</label>
+	<input type="text" id="number" name="number"/><br>	
+	<label for="name">员工姓名：</label>
+	<input type="text" id="name" name="name"/><br>
+	<label for="job">员工职务：</label>
+	<input type="text" id="job" name="job"/><br>
+	<p id='createResult'></p>	
+	<button id="create">添加员工</button>
+
+	<script type="text/javascript">		
+		document.getElementById('search').onclick=function() {
+			var number = document.getElementById("keyword").value;
+			var result = document.getElementById("searchResult");
+			var xhr = new XMLHttpRequest();
+			//通过在服务端设置Access-Control-Allow-Origin实现跨域
+			xhr.open("GET", "http://127.0.0.1:8080/ajax/xhr2.do?number=" + number);
+			xhr.send();
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4) {
+					if (xhr.status === 200) {
+						var data = JSON.parse(xhr.responseText);
+						if (data.success) {
+							result.innerHTML = data.msg;
+						} else {
+							result.innerHTML = "发生错误 ：" + data.msg;
+						}						
+					} else {
+						alert("发生错误 ：" + xhr.status);
+					}
+				}
+			}
+		}
+
+		document.getElementById('create').onclick=function() {
+			var number = document.getElementById("number").value;
+			var name = document.getElementById("name").value;
+			var job = document.getElementById("job").value;
+			var result = document.getElementById("createResult");
+			var xhr = new XMLHttpRequest();
+			var params = "number="+number+"&name="+name+"&job="+job;
+			xhr.open("POST", "http://127.0.0.1:8080/ajax/xhr2.do");			
+			//必须设置
+			xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+			xhr.send(params);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4) {
+					if (xhr.status === 200) {
+						var data = JSON.parse(xhr.responseText);
+						if (data.success) {
+							result.innerHTML = data.msg;
+						} else {
+							result.innerHTML = "发生错误 ：" + data.msg;
+						}			
+					} else {
+						alert("发生错误 ：" + xhr.status);
+					}
+				}
+			}
+		}
+	</script>
+</body>
+</html>

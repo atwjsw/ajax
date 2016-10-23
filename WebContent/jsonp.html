@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>AJAX测试</title>
+    <style>
+    h1,
+    label,
+    input,
+    button,
+    p {
+        font-size: 20px;
+        line-height: 1.5;
+    }
+    </style>
+    <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.js"></script>
+</head>
+
+<body>
+    <h1>JQuery JSONP跨域调用</h1>
+    <hr>
+    <h1>查询员工</h1>
+    <label for="keyword">员工号：</label>
+    <input type="text" id="keyword" name="keyword" />
+    <br>
+    <p id='searchResult'></p>
+    <button id="search">查询员工</button>
+    <h1>添加员工</h1>
+    <label for="number">员工号：</label>
+    <input type="text" id="number" name="number" />
+    <br>
+    <label for="name">员工姓名：</label>
+    <input type="text" id="name" name="name" />
+    <br>
+    <label for="job">员工职务：</label>
+    <input type="text" id="job" name="job" />
+    <br>
+    <p id='createResult'></p>
+    <button id="create">添加员工</button>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#search').click(function() {
+            var number = $("#keyword").val();
+            var result = $("#searchResult");
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1:8080/ajax/jsonp.do?number=" + number, //从localhost调用127.0.0.1会出现跨域错误，需使用jsonp
+                dataType: "jsonp", //json支持
+                jsonp: "callback", //json支持
+                success: function(data) {
+                    if (data.success) {
+                        result.html(data.msg);
+                    } else {
+                        result.html("发生错误 ：" + data.msg);
+                    }
+                },
+                error: function(jqXHR) {
+                    alert("发生错误 ：" + jqXHR.status);
+                }
+            })
+        })
+
+        //jsonp不支持post
+        $('#create').click(function() {
+            var number = $('#number').val();
+            var name = $('#name').val();
+            var job = $('#job').val();
+            var result = $('#createResult');
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:8080/ajax/json.do", 
+                dataType: "json",
+                data: {
+                    number: number,
+                    name: name,
+                    job: job
+                },
+                success: function(data) {
+                    if (data.success) {
+                        result.html(data.msg);
+                    } else {
+                        result.html("发生错误 ：" + data.msg);
+                    }
+                },
+                error: function(jqXHR) {
+                    alert("发生错误" + jqXHR.status);
+                }
+
+            })
+        })
+
+    });
+    </script>
+</body>
+
+</html>
